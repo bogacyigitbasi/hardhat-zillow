@@ -8,6 +8,7 @@ pragma solidity ^0.8.13;
 // lender funds and transfer the ownershio to buyer
 // seller gets paid
 
+// added the interface for ERC721
 interface IERC721 {
     function transferFrom(address _from, address _to, uint256 _id) external;
 }
@@ -15,9 +16,25 @@ interface IERC721 {
 contract Escrow {
     address public lender;
     address public inspector;
+    // pass the NFT address so escrow keep
     address public realEstateTokenAddress;
     // receives the eth so payable
     address payable public seller;
+
+    // get if a token real estate is listed
+    mapping(uint256 => bool) public isListed;
+
+    // real estate price
+    mapping(uint256 => uint256) public purchasePrice;
+    mapping(uint256 => uint256) public escrowAmount;
+    mapping(uint256 => address) public buyer;
+
+    mapping(uint256 => bool) public inspectionPass;
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Only real estate agent can sell");
+        _;
+    }
 
     constructor(
         address _realEstateTokenAddress,
@@ -29,5 +46,63 @@ contract Escrow {
         seller = _seller;
         inspector = _inspector;
         lender = _lender;
+    }
+
+    // take the NFT from the seller, put it on escrow and
+    // list & sell it for the price defined by the seller
+    // the ownership must have been put to a 3rd party (neutral)
+    function list(
+        uint256 _tokenId,
+        uint256 _purchasePrice,
+        uint256 _escrowAmount,
+        address _buyer
+    ) public payable onlySeller {
+        IERC721(realEstateTokenAddress).transferFrom(
+            msg.sender,
+            address(this),
+            _tokenId
+        );
+        isListed[_tokenId] = true;
+        purchasePrice[_tokenId] = _purchasePrice;
+        escrowAmount[_tokenId] = _escrowAmount;
+        buyer[_tokenId] = _buyer;
+    }
+
+    modifier onlyBuyer(uint256 _tokenId) {
+        require(msg.sender == buyer[_tokenId], "Only buyer can call this");
+        _;
+    }
+
+    // buyer deposits money on the contract like downpayment
+    function depositCollateral(
+        uint256 _tokenId
+    ) public payable onlyBuyer(_tokenId) {
+        require(msg.value >= escrowAmount[_tokenId]); // escrow amount added when listing
+    }
+
+    // appraisal / inspection
+    modifier onlyInspector() {
+        require(
+            msg.sender == inspector,
+            "Only inspector can call the contract"
+        );
+        _;
+    }
+    // only inspector can call it
+    function updateInspectionStatus(
+        uint256 _tokenId,
+        bool _status
+    ) public onlyInspector {
+        inspectionPass[_tokenId] = _status;
+    }
+
+    function getInspectionStatus(uint256 _tokenId) public view returns (bool) {
+        return inspectionPass[_tokenId];
+    }
+    // buyer needs to lend some money from lender
+
+    // get contract balance for testing purposes
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 }

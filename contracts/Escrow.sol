@@ -27,9 +27,13 @@ contract Escrow {
     // real estate price
     mapping(uint256 => uint256) public purchasePrice;
     mapping(uint256 => uint256) public escrowAmount;
+
+    // who is the buyer
     mapping(uint256 => address) public buyer;
 
     mapping(uint256 => bool) public inspectionPass;
+    // approve the token's sale, we make the approver accountable here.
+    mapping(uint256 => mapping(address => bool)) public approval;
 
     modifier onlySeller() {
         require(msg.sender == seller, "Only real estate agent can sell");
@@ -99,8 +103,41 @@ contract Escrow {
     function getInspectionStatus(uint256 _tokenId) public view returns (bool) {
         return inspectionPass[_tokenId];
     }
-    // buyer needs to lend some money from lender
 
+    function approveSale(uint256 _tokenId) public {
+        approval[_tokenId][msg.sender] = true;
+    }
+
+    // require inspection status true
+    // require sale to be authorized
+    // require funds check
+    // transfer the token to buyer // buyer needs to lend some money from lender??
+    // transfer funds to the seller
+    function finalizeSale(uint256 _tokenId) public {
+        require(
+            getInspectionStatus(_tokenId) == true,
+            "Inspection is not passed"
+        );
+        require(approval[_tokenId][buyer[_tokenId]]);
+        require(approval[_tokenId][seller]);
+        require(approval[_tokenId][lender]);
+
+        require(
+            address(this).balance >= purchasePrice[_tokenId],
+            "price is not sufficient"
+        );
+        // send contract balance to the seller.
+        (bool success, ) = payable(seller).call{value: address(this).balance}(
+            ""
+        );
+        require(success);
+
+        IERC721(realEstateTokenAddress).transferFrom(
+            address(this),
+            buyer[_tokenId],
+            _tokenId
+        );
+    }
     // get contract balance for testing purposes
     function getBalance() public view returns (uint256) {
         return address(this).balance;

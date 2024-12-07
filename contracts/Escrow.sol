@@ -138,6 +138,13 @@ contract Escrow {
             _tokenId
         );
     }
+
+    function cancelSale(uint256 _tokenId) public {
+        if (inspectionPass[_tokenId] == false) {
+            payable(buyer[_tokenId]).transfer(address(this).balance);
+        } else payable(seller).transfer(address(this).balance);
+    }
+
     // get contract balance for testing purposes
     function getBalance() public view returns (uint256) {
         return address(this).balance;

@@ -14,6 +14,7 @@ interface IERC721 {
 }
 
 contract Escrow {
+    uint256 testval;
     address public lender;
     address public inspector;
     // pass the NFT address so escrow keep

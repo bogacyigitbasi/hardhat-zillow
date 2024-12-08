@@ -25,7 +25,9 @@ async function main() {
   console.log("Minting 3 properties")
 
   for(let i =0; i<3;i++){
-    const transaction = await realEstate.connect(seller).mint('https://ipfs.io/ipfs/QmQVcpsjrA6cr1iJjZAodYwmPekYgbnXGo4DFubJiLc2EB/"${i + 1}.json')
+    const uri = "https://ipfs.io/ipfs/QmQVcpsjrA6cr1iJjZAodYwmPekYgbnXGo4DFubJiLc2EB/"+(i+1).toString() + ".json"
+    const transaction = await realEstate.connect(seller).mint(uri)
+    console.log("minting ",uri )
     await transaction.wait()
   }
 
@@ -45,9 +47,17 @@ async function main() {
   console.log("Escrow address ", escrow.address)
 
 
-    // List recently minted real estates
+  // List recently minted real estates
   // we have real estates, we know the buyers, we have the escrow amount and min collateral
   // first token
+
+  // list includes transferFrom
+  // which means we have to approve token transfer from seller (per token!)
+
+  for (let i = 0; i<3; i++){
+    transaction = await realEstate.connect(seller).approve(escrow.address, i+1);
+    await transaction.wait()
+  }
   transaction = await escrow.connect(seller).list(1, tokens(20), tokens(10),buyer.address, { gasLimit: 30000000 })
   await transaction.wait()
 

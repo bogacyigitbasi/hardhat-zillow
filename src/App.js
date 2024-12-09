@@ -106,7 +106,7 @@ function App() {
   const toggleProp = (home) => {
     // console.log(home)
     setHome(home)
-    toggle ? setToggle(false) : setToggle(true)
+    toggle ? setToggle(false) : setToggle(true);
   }
 
 
@@ -140,7 +140,6 @@ function App() {
                     <strong>{home.attributes[3].value}</strong> ba |
                     <strong>{home.attributes[4].value}</strong> sqft |
                   </p>
-                  <p>{home.address}</p>
               </div>
             </div>
             ))
@@ -150,7 +149,7 @@ function App() {
       </div>
 
       {toggle && (
-          <Home home={home} provider={provider} escrow={escrow}togglePop={toggleProp}/>
+          <Home home={home} provider={provider} account = {account} escrow={escrow} togglePop={toggleProp}/>
         )}
 
     </div>

@@ -77,32 +77,18 @@ const Home = ({ home, provider, account, escrow, toggleProp }) => {
     }
     // lender is a bit different first approves his agreement
     // and then sends the remaining amount
-    // const lendHandler = async() => {
-    //     const signer = await provider.getSigner() // get the connected account
-    //     const trans = await escrow.connect(signer).approveSale(home.id)
-    //     await trans.wait()
+    const lendHandler = async() => {
+        const signer = await provider.getSigner() // get the connected account
+        const trans = await escrow.connect(signer).approveSale(home.id)
+        await trans.wait()
 
-    //     const escrowAmount = await escrow.escrowAmount(home.id) // find the escrow amount
-    //     const purchaseAmount = await escrow.purchasePrice(home.id)
+        const escrowAmount = await escrow.escrowAmount(home.id) // find the escrow amount
+        const purchaseAmount = await escrow.purchasePrice(home.id)
 
-    //     // lender deposit the difference of purchase amount and escrow which is already deposited.
-    //     // trans = await escrow.connect(signer).depositCollateral(home.id, {value: (purchaseAmount - escrowAmount).toString, gasLimit: 60000})
-    //     await signer.sendTransaction({ to: escrow.address, value: (purchaseAmount-escrowAmount).toString(), gasLimit: 60000 })
-    //     // await trans.wait()
-
-    //     setHasLended(true)
-    // }
-
-    const lendHandler = async () => {
-        const signer = await provider.getSigner()
-
-        // Lender approves...
-        const transaction = await escrow.connect(signer).approveSale(home.id)
-        await transaction.wait()
-
-        // Lender sends funds to contract...
-        const lendAmount = (await escrow.purchasePrice(home.id) - await escrow.escrowAmount(home.id))
-        await signer.sendTransaction({ to: escrow.address, value: lendAmount.toString(), gasLimit: 60000 })
+        // lender deposit the difference of purchase amount and escrow which is already deposited.
+        // trans = await escrow.connect(signer).depositCollateral(home.id, {value: (purchaseAmount - escrowAmount).toString, gasLimit: 60000})
+        await signer.sendTransaction({ to: escrow.address, value: (purchaseAmount-escrowAmount).toString(), gasLimit: 60000 })
+        // await trans.wait()
 
         setHasLended(true)
     }
@@ -118,7 +104,6 @@ const Home = ({ home, provider, account, escrow, toggleProp }) => {
 
         setHasSold(true)
     }
-
 
     useEffect(() =>{
         fetchDetails()
@@ -182,11 +167,12 @@ const Home = ({ home, provider, account, escrow, toggleProp }) => {
                             <li key={index}> <strong>{attribute.trait_type}</strong> : {attribute.value} </li>
                         ))}
                     </ul>
-                  </div>
+
                 </div>
                     <button onClick={toggleProp} className='home__close'>
                          <img src={close} alt='Close'></img>
                     </button>
+                </div>
                 </div>
             </div>
     );

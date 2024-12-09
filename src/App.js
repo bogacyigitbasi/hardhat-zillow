@@ -104,7 +104,7 @@ function App() {
   const [toggle, setToggle] = useState(false) // by default its not toggled
    // defining a new useState hook for the home
   const toggleProp = (home) => {
-    // console.log(home)
+    // console.log("clicked")
     setHome(home)
     toggle ? setToggle(false) : setToggle(true);
   }
@@ -149,7 +149,7 @@ function App() {
       </div>
 
       {toggle && (
-          <Home home={home} provider={provider} account = {account} escrow={escrow} togglePop={toggleProp}/>
+          <Home home={home} provider={provider} account = {account} escrow={escrow} toggleProp={toggleProp}/>
         )}
 
     </div>

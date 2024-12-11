@@ -14,7 +14,6 @@ interface IERC721 {
 }
 
 contract Escrow {
-    uint256 testval;
     address public lender;
     address public inspector;
     // pass the NFT address so escrow keep
@@ -145,6 +144,8 @@ contract Escrow {
             payable(buyer[_tokenId]).transfer(address(this).balance);
         } else payable(seller).transfer(address(this).balance);
     }
+
+    receive() external payable {}
 
     // get contract balance for testing purposes
     function getBalance() public view returns (uint256) {

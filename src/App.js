@@ -122,8 +122,8 @@ function App() {
 
         <hr/>
         <div className='cards'>
-          // react allows you to use html and js at the same place
-          {
+
+          {// react allows you to use html and js at the same place
             // iterator on homes in pairs
             homes.map((home, index) => ( //we just want a return value.
               // giving each card an index

@@ -123,6 +123,7 @@ beforeEach(async () => {
             expect(trx2).to.be.equal(true)
         })
     })
+
     describe('Sale', ()=>{
         beforeEach(async () => {
             try {

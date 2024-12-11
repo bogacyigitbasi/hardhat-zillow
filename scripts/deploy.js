@@ -15,7 +15,7 @@ async function main() {
 
   //setup accounts
   [buyer, seller, inspector, lender] = await ethers.getSigners();
-
+  console.log("buyer ", buyer)
   // deploy real estate contract
   const RealEstate = await ethers.getContractFactory('RealEstate',signer = seller)
   const realEstate = await RealEstate.deploy()
